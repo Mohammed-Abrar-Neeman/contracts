@@ -1,0 +1,41 @@
+{
+  "name": "gsdc-contracts",
+  "version": "0.1.0",
+  "description": "GSDC Settlement smart contracts — EIP-3009 extension, Settlement Diamond (EIP-2535), Margin Wallet. Sepolia testnet only.",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "coverage": "hardhat coverage",
+    "lint": "solhint 'contracts/**/*.sol'",
+    "docs": "hardhat docgen && rm -rf ../docs/api/contracts && mkdir -p ../docs/api && mv docgen-out ../docs/api/contracts",
+    "deploy:token": "hardhat run scripts/deploy-token.ts --network sepolia",
+    "deploy:diamond": "hardhat run scripts/deploy-diamond.ts --network sepolia",
+    "deploy:margin-wallets": "hardhat run scripts/deploy-margin-wallets.ts --network sepolia",
+    "deploy:sepolia": "hardhat run scripts/deploy-sepolia.ts --network sepolia",
+    "validate:sepolia": "hardhat run scripts/validate-sepolia.ts --network sepolia",
+    "validate:sepolia:dryrun": "hardhat run scripts/validate-sepolia.ts --network hardhat",
+    "dev:fixture": "hardhat run scripts/dev-fixture.ts --network hardhat",
+    "verify": "hardhat run scripts/verify-on-etherscan.ts --network sepolia",
+    "export-abi": "hardhat run scripts/export-abi.ts",
+    "node": "hardhat node"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.1.3",
+    "@openzeppelin/contracts": "^5.0.2",
+    "@types/chai": "^4.3.16",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.12.0",
+    "chai": "^4.4.1",
+    "dotenv": "^17.4.2",
+    "ethers": "^6.13.2",
+    "hardhat": "^2.22.10",
+    "hardhat-docgen": "^1.3.0",
+    "solhint": "^5.0.3",
+    "solidity-coverage": "^0.8.13",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

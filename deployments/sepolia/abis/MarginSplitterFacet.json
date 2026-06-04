@@ -1,0 +1,50 @@
+{
+  "contractName": "MarginSplitterFacet",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "corridorId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "CorridorNotConfigured",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "corridorId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "deliveryAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "calculateMargins",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "lpSourceMargin",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tgsTreasuryMargin",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lpDestMargin",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}

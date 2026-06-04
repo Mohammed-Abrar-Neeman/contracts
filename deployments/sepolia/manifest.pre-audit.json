@@ -1,0 +1,29 @@
+{
+  "deployer": "0x01325bCafcD94857Cf3a4733837820AEBA7e16B6",
+  "admin": "0x01325bCafcD94857Cf3a4733837820AEBA7e16B6",
+  "oracleSigner": "0x01325bCafcD94857Cf3a4733837820AEBA7e16B6",
+  "gsdcToken": "0x37Df4b92D573b8a5341e0458eA6fe8271A877180",
+  "diamond": "0x612e912e4D1ae2146A4344BD048a09b709D871b0",
+  "diamondCutFacet": "0xAa4760ec4D929dC1ed95D5fa519c42bBFCcF11C6",
+  "diamondInit": "0x55b8338A06F1dd65FB8f2fC0654f7A3260a822ED",
+  "tgsTreasuryMarginWallet": "0x7f1E171F0c524Df58C3B3E2aAEaC31dEB9c10d46",
+  "facets": {
+    "DiamondLoupeFacet": "0x8c22C2560A6C3F9d7d79877a1673Cc31372ED8F8",
+    "QuoteVerifierFacet": "0x7c8EE325bD1DD74132A6Fbbe91DcD45c82f38995",
+    "FloatManagerFacet": "0xf0A8D8517ebEf93b0c70631f240e77DC127330a2",
+    "SettlementExecutorFacet": "0xb84830C6AD95635b1201468Ad9367b8FdA5828A2",
+    "MarginSplitterFacet": "0x09Ec752a0a8c071B3D25A9e1FD70D4546D0EfA59",
+    "ComplianceGateFacet": "0x841585b4ff4501c4bf8562B3fea7F8a285f60A8c",
+    "TimeLockControllerFacet": "0x6642545b38013764fD2112f7B752B651a4cBFF42",
+    "DisputeResolverFacet": "0xf8C633b4D5f5B2a3cAf53F473c3C5C9901f8aD66",
+    "EventEmitterFacet": "0x38DB307D9753F959f8DDDf720Fe6246C4c060392",
+    "MintBurnAuthorityFacet": "0xf3B3C3DcAC1a326Be667e503CB56f8feC92405af",
+    "OracleGovernanceFacet": "0x2cD5a1C36C991E2707A7BBE4f0Ea577Bb7bc627a"
+  },
+  "chainId": 11155111,
+  "timeLockDelay": 0,
+  "maxQuoteTTL": 300,
+  "network": "sepolia",
+  "deployedAt": "2026-05-12T10:53:12.928Z",
+  "updatedAt": "2026-05-12T10:53:12.928Z"
+}

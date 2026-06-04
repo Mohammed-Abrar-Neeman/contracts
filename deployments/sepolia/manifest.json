@@ -1,0 +1,95 @@
+{
+  "deployer": "0x01325bCafcD94857Cf3a4733837820AEBA7e16B6",
+  "admin": "0x01325bCafcD94857Cf3a4733837820AEBA7e16B6",
+  "oracleSigner": "0xC8B32a793c42592C17D986891Ea3078fEce3f1dC",
+  "gsdcToken": "0x20BDab2DEb77C6d8C04BE861C2169665C2253B2f",
+  "diamond": "0xA0A37BaAf8c255b5D935b39CAe7420557872e89D",
+  "diamondCutFacet": "0xFa70eFbE439715dB57e4e3d967D60693987782fc",
+  "diamondInit": "0xb9FC9f07fbcC16cBED989462b6B03eD820179b2B",
+  "tgsTreasuryMarginWallet": "0xAf89C8a1Cae99555154408f722ea5F5b65C311f6",
+  "facets": {
+    "DiamondLoupeFacet": "0xF6aFB330b24c366c36Af127067d0a01BF52C4F43",
+    "QuoteVerifierFacet": "0xe08EED3de179fE6E59265f689AE350406De5539F",
+    "FloatManagerFacet": "0xc6209321516D3EE6181dc646aA954e9e94cD1A23",
+    "SettlementExecutorFacet": "0x80a04E00D4704D2285C2C3d62A555f78a94F7fc8",
+    "MarginSplitterFacet": "0xD354e7fF49d223dEeD487f66D728dBeCC87AEA33",
+    "ComplianceGateFacet": "0xe3a4Cbebe3957432e0E848AbB554d1Db21D7f17c",
+    "TimeLockControllerFacet": "0x28BdA9D5c9fEB68f319E2Bf87E34dFe89C0aa887",
+    "DisputeResolverFacet": "0x9f73E9f54329fd458e802B5F0EF9f901aaf73C96",
+    "EventEmitterFacet": "0x54F7ecD17f0C528bbe9903290b6F8B765404c22F",
+    "MintBurnAuthorityFacet": "0xA867A02760Dbb47d7cf04d9Cca53fc496abbd403",
+    "OracleGovernanceFacet": "0x61fC27E5a10f2F2EEdE0FdE0C7f9922fa38346C9"
+  },
+  "chainId": 11155111,
+  "timeLockDelay": 0,
+  "maxQuoteTTL": 300,
+  "network": "sepolia",
+  "deployedAt": "2026-05-13T11:14:01.515Z",
+  "updatedAt": "2026-05-13T11:14:01.515Z",
+  "verification": {
+    "GSDCToken": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:14:21.651Z"
+    },
+    "DiamondCutFacet": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:14:40.661Z"
+    },
+    "Diamond": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:14:54.867Z"
+    },
+    "DiamondInit": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:15:13.887Z"
+    },
+    "MarginWallet:tgsTreasury": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:15:32.906Z"
+    },
+    "DiamondLoupeFacet": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:15:47.180Z"
+    },
+    "QuoteVerifierFacet": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:16:01.400Z"
+    },
+    "FloatManagerFacet": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:16:10.835Z"
+    },
+    "SettlementExecutorFacet": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:16:25.246Z"
+    },
+    "MarginSplitterFacet": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:16:34.360Z"
+    },
+    "ComplianceGateFacet": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:16:48.461Z"
+    },
+    "TimeLockControllerFacet": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:17:02.644Z"
+    },
+    "DisputeResolverFacet": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:17:26.401Z"
+    },
+    "EventEmitterFacet": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:17:45.292Z"
+    },
+    "MintBurnAuthorityFacet": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:17:54.559Z"
+    },
+    "OracleGovernanceFacet": {
+      "status": "verified",
+      "verifiedAt": "2026-05-13T11:18:04.042Z"
+    }
+  }
+}

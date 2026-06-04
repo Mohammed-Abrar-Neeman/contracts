@@ -1,0 +1,324 @@
+{
+  "contractName": "QuoteVerifierFacet",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "provided",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "required",
+          "type": "uint256"
+        }
+      ],
+      "name": "BelowThreshold",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "signer",
+          "type": "address"
+        }
+      ],
+      "name": "DuplicateSigner",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ECDSAInvalidSignature",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "length",
+          "type": "uint256"
+        }
+      ],
+      "name": "ECDSAInvalidSignatureLength",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "s",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ECDSAInvalidSignatureS",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidOracleSignature",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "quoteId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "expiredAt",
+          "type": "uint256"
+        }
+      ],
+      "name": "QuoteExpired",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "quoteId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "validAfter",
+          "type": "uint256"
+        }
+      ],
+      "name": "QuoteNotYetValid",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "oldSigner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newSigner",
+          "type": "address"
+        }
+      ],
+      "name": "OracleSignerUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "ORACLE_QUOTE_AGGREGATED_TYPEHASH",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ORACLE_QUOTE_TYPEHASH",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "quoteDomainSeparator",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newSigner",
+          "type": "address"
+        }
+      ],
+      "name": "setOracleSigner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "encodedQuote",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes[]",
+          "name": "signatures",
+          "type": "bytes[]"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "reportsRoot",
+          "type": "bytes32"
+        }
+      ],
+      "name": "verifyAndDecodeAggregatedQuote",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "quoteId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "corridorId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deliveryAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalDebit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lpSourceMarginBps",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tgsTreasuryMarginBps",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lpDestMarginBps",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "validAfter",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "validBefore",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "midRate",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct QuoteVerifierFacet.OracleQuote",
+          "name": "quote",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "encodedQuote",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "verifyAndDecodeQuote",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "quoteId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "corridorId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deliveryAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalDebit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lpSourceMarginBps",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tgsTreasuryMarginBps",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lpDestMarginBps",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "validAfter",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "validBefore",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "midRate",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct QuoteVerifierFacet.OracleQuote",
+          "name": "quote",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}

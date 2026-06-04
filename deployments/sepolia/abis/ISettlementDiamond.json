@@ -1,0 +1,592 @@
+{
+  "contractName": "ISettlementDiamond",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "corridorId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "addPartnerCorridor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "burnFloat",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "corridorId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "deliveryAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "calculateMargins",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "lpSourceMargin",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tgsTreasuryMargin",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lpDestMargin",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "changeId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "cancelChange",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "corridorId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "checkCompliance",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "disputeSettlement",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "changeId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "executeChange",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "quoteId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "corridorId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "lpSource",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "lpDest",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "deliveryAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "encodedQuote",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "oracleSignature",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "authorizationSig",
+          "type": "bytes"
+        }
+      ],
+      "name": "executeSettlement",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        }
+      ],
+      "name": "getAvailableFloat",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "available",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "reserved",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getSettlement",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "settlementId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "quoteId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "corridorId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "lpSource",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "lpDest",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deliveryAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalDebit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lpSourceMargin",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tgsTreasuryMargin",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lpDestMargin",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint8",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "createdAt",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "settledAt",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct LibSettlement.Settlement",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getSettlementReservation",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "mintFloat",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "corridorId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint16",
+          "name": "lpSourceBps",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint16",
+          "name": "tgsTreasuryBps",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint16",
+          "name": "lpDestBps",
+          "type": "uint16"
+        }
+      ],
+      "name": "queueMarginUpdate",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "changeId",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        }
+      ],
+      "name": "reactivatePartner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "recoverFailedSettlement",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "floatWallet",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "marginWallet",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "kycHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "corridorIds",
+          "type": "bytes32[]"
+        }
+      ],
+      "name": "registerPartner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "releaseFloatReservation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "reserveFloat",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newSigner",
+          "type": "address"
+        }
+      ],
+      "name": "setOracleSigner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint32",
+          "name": "newDelay",
+          "type": "uint32"
+        }
+      ],
+      "name": "setTimeLockDelay",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        }
+      ],
+      "name": "suspendPartner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "encodedQuote",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "verifyAndDecodeQuote",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "quoteId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "corridorId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deliveryAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalDebit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lpSourceMarginBps",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tgsTreasuryMarginBps",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lpDestMarginBps",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "validAfter",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "validBefore",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "midRate",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct ISettlementDiamond.OracleQuote",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}

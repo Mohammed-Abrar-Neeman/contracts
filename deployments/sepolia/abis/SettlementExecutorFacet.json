@@ -1,0 +1,408 @@
+{
+  "contractName": "SettlementExecutorFacet",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maximum",
+          "type": "uint256"
+        }
+      ],
+      "name": "AmountAboveMaximum",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minimum",
+          "type": "uint256"
+        }
+      ],
+      "name": "AmountBelowMinimum",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "corridorId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "CorridorNotActive",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidAuthorizationSig",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "corridorId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "OutsideSettlementWindow",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "corridorId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "PartnerNotAuthorised",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "QuoteCorridorMismatch",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ReentrancyGuardReentrantCall",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "SettlementAlreadyExecuted",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "SettlementNotFound",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "corridorId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "lpSource",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "lpDest",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "deliveryAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalDebit",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "lpSourceMargin",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "tgsTreasuryMargin",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "lpDestMargin",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "settledAt",
+          "type": "uint256"
+        }
+      ],
+      "name": "SettlementExecuted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "SettlementFailed",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "quoteId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "corridorId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "lpSource",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "lpDest",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "deliveryAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "encodedQuote",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "oracleSignature",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "authorizationSig",
+          "type": "bytes"
+        }
+      ],
+      "name": "executeSettlement",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "quoteId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "corridorId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "lpSource",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "lpDest",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "deliveryAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "encodedQuote",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes[]",
+          "name": "oracleSignatures",
+          "type": "bytes[]"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "reportsRoot",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "authorizationSig",
+          "type": "bytes"
+        }
+      ],
+      "name": "executeSettlementAggregated",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getSettlement",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "settlementId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "quoteId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "corridorId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "lpSource",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "lpDest",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deliveryAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalDebit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lpSourceMargin",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tgsTreasuryMargin",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lpDestMargin",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint8",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "createdAt",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "settledAt",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct LibSettlement.Settlement",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "settlementId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "recoverFailedSettlement",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "contractName": "DiamondInit",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "admin",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "orchestrator",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "oracleSigner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "gsdcToken",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "tgsTreasuryWallet",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "tgsTreasuryMarginWallet",
+              "type": "address"
+            },
+            {
+              "internalType": "uint32",
+              "name": "maxQuoteTTL",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "timeLockDelay",
+              "type": "uint32"
+            }
+          ],
+          "internalType": "struct DiamondInit.InitArgs",
+          "name": "a",
+          "type": "tuple"
+        }
+      ],
+      "name": "init",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}
