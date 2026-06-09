@@ -342,11 +342,6 @@ contract SettlementExecutorFacet is ReentrancyGuard {
     function _decodeQuoteHeader(bytes memory ret) internal pure
         returns (bytes32 quoteId, bytes32 corridorId, uint256 deliveryAmount)
     {
-        // Return data of `function returns (T memory)` where T contains a
-        // dynamic field is laid out as: [0:32]=offset(0x20), [32:64]=field0,
-        // [64:96]=field1, [96:128]=field2, ... so in `bytes memory ret`
-        // (which has its own 32-byte length prefix) we read at +0x40, +0x60,
-        // and +0x80 for the first three statically-sized fields.
         // solhint-disable-next-line no-inline-assembly
         assembly ("memory-safe") {
             quoteId        := mload(add(ret, 0x40))
@@ -403,13 +398,11 @@ contract SettlementExecutorFacet is ReentrancyGuard {
     }
 
     function _enforceWindow(LibSettlement.CorridorConfig storage c) internal view {
-        // Convert block.timestamp to seconds-from-midnight UTC.
         uint256 sec = block.timestamp % 86400;
         bool inWindow;
         if (c.settlementWindowStart <= c.settlementWindowEnd) {
             inWindow = (sec >= c.settlementWindowStart && sec <= c.settlementWindowEnd);
         } else {
-            // Wrap-around window (e.g. 22:00 → 04:00 next day).
             inWindow = (sec >= c.settlementWindowStart || sec <= c.settlementWindowEnd);
         }
         if (!inWindow) revert OutsideSettlementWindow(0);

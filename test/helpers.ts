@@ -111,6 +111,9 @@ async function _deployFullDiamondImpl(): Promise<DeployedDiamond> {
     "MintBurnAuthorityFacet",
     // [B-12 §3] Whitelist + threshold management facet.
     "OracleGovernanceFacet",
+    // [Req 36.5] Wire PausableFacet into every deployFullDiamond call
+    // so pause/unpause tests and pause-gate tests work out of the box.
+    "PausableFacet",
   ];
   const cuts: { facetAddress: string; action: number; functionSelectors: string[] }[] = [];
   const facets: Record<string, string> = {};
@@ -222,7 +225,10 @@ export async function buildSignedQuote(
   // [B-7] Use the chain's latest block.timestamp (not Date.now()) — earlier tests in the
   // same suite call evm_increaseTime, which advances the Hardhat clock past wall-clock now.
   const blockTs = BigInt((await ethers.provider.getBlock("latest"))!.timestamp);
-  const validBefore = inputs.validBefore ?? (blockTs + 3600n);
+  // [Req 38.4/38.5] Default to blockTs + 299 so quotes stay within the
+  // maxQuoteTTL = 300 cap enforced by QuoteVerifierFacet. Callers that
+  // need a longer or custom window can pass an explicit validBefore.
+  const validBefore = inputs.validBefore ?? (blockTs + 299n);
   const validAfter = inputs.validAfter ?? 0n;
   const midRate = inputs.midRate ?? "1.00000000";
 
