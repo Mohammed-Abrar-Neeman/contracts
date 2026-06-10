@@ -8,16 +8,18 @@ pragma solidity ^0.8.24;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { IEIP3009 } from "../interfaces/IEIP3009.sol";
 import { LibSettlement } from "../libraries/LibSettlement.sol";
 import { LibFloat } from "../libraries/LibFloat.sol";
+import { LibReentrancyGuard } from "../libraries/LibReentrancyGuard.sol";
+import { LibPausable } from "../libraries/LibPausable.sol";
 
 /// @title SettlementExecutorFacet — atomic heart contract [SPEC §2.4]
 /// @notice ALL transfers must succeed or ALL revert. No partial state.
 /// @dev Highest-risk function in the system; CertiK audit must prove
 ///      atomicity under all branches.
-contract SettlementExecutorFacet is ReentrancyGuard {
+contract SettlementExecutorFacet {
+    error SystemPaused();
     /// @notice Thrown when `executeSettlement` (or its aggregated sibling) is
     ///         called twice with the same `settlementId`. Each settlement may
     ///         only be persisted once — the second call is rejected before any
@@ -126,8 +128,30 @@ contract SettlementExecutorFacet is ReentrancyGuard {
         bytes calldata encodedQuote,
         bytes calldata oracleSignature,
         bytes calldata authorizationSig
-    ) external nonReentrant {
+    ) external {
+        LibReentrancyGuard.nonReentrantBefore();
         LibSettlement.enforceOrchestrator();
+        if (LibPausable.paused()) revert SystemPaused();
+
+        _executeSettlementInner(
+            settlementId, quoteId, corridorId, lpSource, lpDest,
+            deliveryAmount, encodedQuote, oracleSignature, authorizationSig
+        );
+
+        LibReentrancyGuard.nonReentrantAfter();
+    }
+
+    function _executeSettlementInner(
+        bytes32 settlementId,
+        bytes32 quoteId,
+        bytes32 corridorId,
+        address lpSource,
+        address lpDest,
+        uint256 deliveryAmount,
+        bytes calldata encodedQuote,
+        bytes calldata oracleSignature,
+        bytes calldata authorizationSig
+    ) internal {
         LibSettlement.DiamondStorage storage ds = LibSettlement.diamondStorage();
 
         if (ds.settlements[settlementId].status != 0) revert SettlementAlreadyExecuted(settlementId);
@@ -142,7 +166,7 @@ contract SettlementExecutorFacet is ReentrancyGuard {
         if (c.maxDeliveryAmount != 0 && deliveryAmount > c.maxDeliveryAmount) {
             revert AmountAboveMaximum(deliveryAmount, c.maxDeliveryAmount);
         }
-        _enforceWindow(c);
+        _enforceWindow(c, corridorId);
 
         if (!ds.partners[lpSource].active || !ds.partners[lpSource].authorisedCorridors[corridorId]) {
             revert PartnerNotAuthorised(lpSource, corridorId);
@@ -252,20 +276,21 @@ contract SettlementExecutorFacet is ReentrancyGuard {
         bytes[] calldata oracleSignatures,
         bytes32 reportsRoot,
         bytes calldata authorizationSig
-    ) external nonReentrant {
+    ) external {
+        LibReentrancyGuard.nonReentrantBefore();
         LibSettlement.enforceOrchestrator();
+        if (LibPausable.paused()) revert SystemPaused();
+
+        // Pre-verification gates
         LibSettlement.DiamondStorage storage ds = LibSettlement.diamondStorage();
-
         if (ds.settlements[settlementId].status != 0) revert SettlementAlreadyExecuted(settlementId);
-
         LibSettlement.CorridorConfig storage c = ds.corridors[corridorId];
         if (!c.active) revert CorridorNotActive(corridorId);
         if (deliveryAmount < c.minDeliveryAmount) revert AmountBelowMinimum(deliveryAmount, c.minDeliveryAmount);
         if (c.maxDeliveryAmount != 0 && deliveryAmount > c.maxDeliveryAmount) {
             revert AmountAboveMaximum(deliveryAmount, c.maxDeliveryAmount);
         }
-        _enforceWindow(c);
-
+        _enforceWindow(c, corridorId);
         if (!ds.partners[lpSource].active || !ds.partners[lpSource].authorisedCorridors[corridorId]) {
             revert PartnerNotAuthorised(lpSource, corridorId);
         }
@@ -273,35 +298,32 @@ contract SettlementExecutorFacet is ReentrancyGuard {
             revert PartnerNotAuthorised(lpDest, corridorId);
         }
 
-        // [B-12 §4] Multi-signer verification — the QuoteVerifierFacet
-        // checks threshold + whitelist + duplicates and reverts with
-        // BelowThreshold / InvalidOracleSignature / DuplicateSigner.
-        {
-            bytes memory verifyData = abi.encodeWithSelector(
-                bytes4(keccak256("verifyAndDecodeAggregatedQuote(bytes,bytes[],bytes32)")),
-                encodedQuote, oracleSignatures, reportsRoot
-            );
-            // solhint-disable-next-line avoid-low-level-calls
-            (bool ok, bytes memory ret) = address(this).staticcall(verifyData);
-            if (!ok) {
-                // solhint-disable-next-line no-inline-assembly
-                assembly ("memory-safe") { revert(add(ret, 32), mload(ret)) }
-            }
-            (bytes32 verifiedQuoteId, bytes32 verifiedCorridorId, uint256 verifiedDeliveryAmount)
-                = _decodeQuoteHeader(ret);
-            if (verifiedQuoteId != quoteId) revert QuoteCorridorMismatch();
-            if (verifiedCorridorId != corridorId) revert QuoteCorridorMismatch();
-            // [B-14 C1] Bind the deliveryAmount parameter to the signed quote.
-            if (verifiedDeliveryAmount != deliveryAmount) {
-                revert DeliveryAmountMismatch(deliveryAmount, verifiedDeliveryAmount);
-            }
-        }
+        // Verify quote (extracted to reduce stack depth)
+        _verifyAggregatedQuote(quoteId, corridorId, deliveryAmount, encodedQuote, oracleSignatures, reportsRoot);
 
+        // Execute fan-out (extracted to reduce stack depth)
+        _executeAggFanout(ds, c, settlementId, quoteId, corridorId, lpSource, lpDest, deliveryAmount, authorizationSig);
+
+        LibReentrancyGuard.nonReentrantAfter();
+    }
+
+    function _executeAggFanout(
+        LibSettlement.DiamondStorage storage ds,
+        LibSettlement.CorridorConfig storage c,
+        bytes32 settlementId,
+        bytes32 quoteId,
+        bytes32 corridorId,
+        address lpSource,
+        address lpDest,
+        uint256 deliveryAmount,
+        bytes calldata authorizationSig
+    ) internal {
         uint256 lpSourceMargin = (deliveryAmount * c.lpSourceMarginBps) / 10_000;
         uint256 tgsTreasuryMargin = (deliveryAmount * c.tgsTreasuryMarginBps) / 10_000;
         uint256 lpDestMargin = (deliveryAmount * c.lpDestMarginBps) / 10_000;
         uint256 totalDebit = deliveryAmount + lpSourceMargin + tgsTreasuryMargin + lpDestMargin;
 
+        // Persist pre-execution snapshot for audit trail.
         LibSettlement.Settlement storage s = ds.settlements[settlementId];
         s.settlementId = settlementId;
         s.quoteId = quoteId;
@@ -334,6 +356,34 @@ contract SettlementExecutorFacet is ReentrancyGuard {
             block.timestamp
         );
     }
+
+    function _verifyAggregatedQuote(
+        bytes32 quoteId,
+        bytes32 corridorId,
+        uint256 deliveryAmount,
+        bytes calldata encodedQuote,
+        bytes[] calldata oracleSignatures,
+        bytes32 reportsRoot
+    ) internal view {
+        bytes memory verifyData = abi.encodeWithSelector(
+            bytes4(keccak256("verifyAndDecodeAggregatedQuote(bytes,bytes[],bytes32)")),
+            encodedQuote, oracleSignatures, reportsRoot
+        );
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool ok, bytes memory ret) = address(this).staticcall(verifyData);
+        if (!ok) {
+            // solhint-disable-next-line no-inline-assembly
+            assembly ("memory-safe") { revert(add(ret, 32), mload(ret)) }
+        }
+        (bytes32 verifiedQuoteId, bytes32 verifiedCorridorId, uint256 verifiedDeliveryAmount)
+            = _decodeQuoteHeader(ret);
+        if (verifiedQuoteId != quoteId) revert QuoteCorridorMismatch();
+        if (verifiedCorridorId != corridorId) revert QuoteCorridorMismatch();
+        if (verifiedDeliveryAmount != deliveryAmount) {
+            revert DeliveryAmountMismatch(deliveryAmount, verifiedDeliveryAmount);
+        }
+    }
+
 
     /// @dev Pulls the first three fields out of an abi-encoded OracleQuote
     ///      tuple — quoteId, corridorId, deliveryAmount. The full tuple
@@ -397,7 +447,7 @@ contract SettlementExecutorFacet is ReentrancyGuard {
         return LibSettlement.diamondStorage().settlements[settlementId];
     }
 
-    function _enforceWindow(LibSettlement.CorridorConfig storage c) internal view {
+    function _enforceWindow(LibSettlement.CorridorConfig storage c, bytes32 corridorId) internal view {
         uint256 sec = block.timestamp % 86400;
         bool inWindow;
         if (c.settlementWindowStart <= c.settlementWindowEnd) {
@@ -405,6 +455,6 @@ contract SettlementExecutorFacet is ReentrancyGuard {
         } else {
             inWindow = (sec >= c.settlementWindowStart || sec <= c.settlementWindowEnd);
         }
-        if (!inWindow) revert OutsideSettlementWindow(0);
+        if (!inWindow) revert OutsideSettlementWindow(corridorId);
     }
 }

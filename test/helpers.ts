@@ -228,8 +228,9 @@ export async function buildSignedQuote(
   // [Req 38.4/38.5] Default to blockTs + 299 so quotes stay within the
   // maxQuoteTTL = 300 cap enforced by QuoteVerifierFacet. Callers that
   // need a longer or custom window can pass an explicit validBefore.
+  // validAfter defaults to blockTs-1 so TTL = 300 and quote is valid immediately.
   const validBefore = inputs.validBefore ?? (blockTs + 299n);
-  const validAfter = inputs.validAfter ?? 0n;
+  const validAfter = inputs.validAfter ?? (blockTs - 1n);
   const midRate = inputs.midRate ?? "1.00000000";
 
   const quote = {
@@ -373,10 +374,10 @@ export async function buildSignedAggregatedQuote(
   const lpDestMargin = (inputs.deliveryAmount * BigInt(inputs.lpDestBps)) / 10_000n;
   const totalDebit = inputs.deliveryAmount + lpSourceMargin + tgsTreasuryMargin + lpDestMargin;
   const blockTs = BigInt((await ethers.provider.getBlock("latest"))!.timestamp);
-  const validBefore = inputs.validBefore ?? (blockTs + 3600n);
-  // [Task 31] Honour caller-supplied validAfter (was hardcoded to 0n)
-  // so the aggregated NotYetValid branch is reachable from tests.
-  const validAfter = inputs.validAfter ?? 0n;
+  const validBefore = inputs.validBefore ?? (blockTs + 299n);
+  // validAfter defaults to blockTs-1 so TTL = validBefore - validAfter = 300.
+  // Using blockTs-1 ensures block.timestamp > validAfter on the NEXT block.
+  const validAfter = inputs.validAfter ?? (blockTs - 1n);
   const midRate = inputs.midRate ?? "1.00000000";
   const reportsRoot = inputs.reportsRoot ?? ethers.ZeroHash;
 

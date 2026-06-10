@@ -29,4 +29,10 @@ contract DiamondLoupeFacet is IDiamondLoupe {
     function facetAddress(bytes4 _functionSelector) external view override returns (address) {
         return LibDiamond.diamondStorage().selectorToFacetAndPosition[_functionSelector].facetAddress;
     }
+
+    /// @notice ERC-165 interface query. Returns true for IDiamondCut and IDiamondLoupe
+    ///         after DiamondInit.init registers them.
+    function supportsInterface(bytes4 interfaceId) external view returns (bool) {
+        return LibDiamond.diamondStorage().supportedInterfaces[interfaceId];
+    }
 }

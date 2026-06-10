@@ -121,4 +121,48 @@ interface ISettlementDiamond {
     function mintFloat(address to, uint256 amount) external;
     /// @notice Admin-only burn of GSDC from a wallet (recovery).
     function burnFloat(address from, uint256 amount) external;
+
+    // ─── SettlementExecutorFacet (aggregated path) ─────────────────────
+    function executeSettlementAggregated(
+        bytes32 settlementId,
+        bytes32 quoteId,
+        bytes32 corridorId,
+        address lpSource,
+        address lpDest,
+        uint256 deliveryAmount,
+        bytes calldata encodedQuote,
+        bytes[] calldata oracleSignatures,
+        bytes32 reportsRoot,
+        bytes calldata authorizationSig
+    ) external;
+
+    // ─── PausableFacet ─────────────────────────────────────────────────
+    function pause() external;
+    function unpause() external;
+    function isPaused() external view returns (bool);
+
+    // ─── TimeLockControllerFacet — two-step admin transfer ─────────────
+    function transferAdmin(address newAdmin) external;
+    function acceptAdmin() external;
+
+    // ─── TimeLockControllerFacet — corridor lifecycle ──────────────────
+    function configureCorridor(
+        bytes32 corridorId,
+        bool active,
+        uint256 minAmount,
+        uint256 maxAmount,
+        uint32 windowStart,
+        uint32 windowEnd
+    ) external;
+    function getPendingChange(bytes32 changeId) external view returns (uint256 readyAt);
+
+    // ─── QuoteVerifierFacet (aggregated path) ──────────────────────────
+    function verifyAndDecodeAggregatedQuote(
+        bytes calldata encodedQuote,
+        bytes[] calldata signatures,
+        bytes32 reportsRoot
+    ) external view returns (OracleQuote memory);
+
+    // ─── DiamondLoupeFacet — ERC-165 ───────────────────────────────────
+    function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }

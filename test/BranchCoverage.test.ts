@@ -17,7 +17,8 @@ describe("Branch coverage — targeted edge cases", () => {
     // [B-16 β-2] queueAndExecute may evm_increaseTime by up to 60s.
     // Use EVM block time, not wall clock, when computing validBefore.
     const _b = await ethers.provider.getBlock("latest");
-    const validBefore = BigInt(_b!.timestamp + 3600);
+    const _bTs = BigInt(_b!.timestamp);
+    const validBefore = _bTs + 299n;
     const quote = {
       quoteId: ethers.id("q-happy"),
       corridorId: ethers.id("INR_CNH"),
@@ -26,7 +27,7 @@ describe("Branch coverage — targeted edge cases", () => {
       lpSourceMarginBps: 30n,
       tgsTreasuryMarginBps: 10n,
       lpDestMarginBps: 20n,
-      validAfter: 0n,
+      validAfter: _bTs - 1n,
       validBefore,
       midRate: "82.50",
       // [B-14 C8] isOverridden bound to signature.
@@ -77,13 +78,14 @@ describe("Branch coverage — targeted edge cases", () => {
     // [B-16 β] Block time may be ahead of wall clock from sibling tests'
     // time-warps. Anchor validBefore to EVM time.
     const _b = await ethers.provider.getBlock("latest");
-    const validBefore = BigInt(_b!.timestamp + 3600);
+    const _bTs = BigInt(_b!.timestamp);
+    const validBefore = _bTs + 299n;
     const quote = {
       quoteId: ethers.id("q-bad"),
       corridorId: ethers.id("INR_CNH"),
       deliveryAmount: 1n, totalDebit: 1n,
       lpSourceMarginBps: 0n, tgsTreasuryMarginBps: 0n, lpDestMarginBps: 0n,
-      validAfter: 0n, validBefore, midRate: "1",
+      validAfter: _bTs - 1n, validBefore, midRate: "1",
       // [B-14 C8] isOverridden bound to signature.
       isOverridden: false,
     };

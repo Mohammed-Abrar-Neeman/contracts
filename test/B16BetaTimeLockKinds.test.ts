@@ -182,7 +182,7 @@ describe("[B-16 β-3] PausableFacet scaffold (NOT installed)", () => {
     expect(await deployed.getAddress()).to.match(/^0x[0-9a-fA-F]{40}$/);
   });
 
-  it("PausableFacet selectors are NOT in the deployed diamond's loupe output", async () => {
+  it("PausableFacet selectors ARE in the deployed diamond's loupe output (now wired)", async () => {
     const d = await deployFullDiamond();
     const loupe = await asFacet<any>(d.diamondAddr, "DiamondLoupeFacet");
     const facets = await loupe.facets();
@@ -200,8 +200,8 @@ describe("[B-16 β-3] PausableFacet scaffold (NOT installed)", () => {
         (frag as { name: string }).name,
       )!.selector;
       expect(installedSelectors.has(sel),
-        `PausableFacet.${(frag as { name: string }).name} selector ${sel} should NOT be installed`)
-        .to.eq(false);
+        `PausableFacet.${(frag as { name: string }).name} selector ${sel} SHOULD be installed`)
+        .to.eq(true);
     }
   });
 });

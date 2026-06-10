@@ -4,10 +4,12 @@ pragma solidity ^0.8.24;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { LibSettlement } from "../libraries/LibSettlement.sol";
 import { LibFloat } from "../libraries/LibFloat.sol";
+import { LibPausable } from "../libraries/LibPausable.sol";
 
 /// @title FloatManagerFacet [SPEC §2.3]
 contract FloatManagerFacet {
     error ReservationAlreadyExists(bytes32 settlementId);
+    error SystemPaused();
 
     event FloatReserved(address indexed partner, bytes32 indexed settlementId, uint256 amount);
     event FloatReleased(address indexed partner, bytes32 indexed settlementId, uint256 amount);
@@ -23,6 +25,7 @@ contract FloatManagerFacet {
 
     function reserveFloat(address partner, bytes32 settlementId, uint256 amount) external {
         LibSettlement.enforceOrchestrator();
+        if (LibPausable.paused()) revert SystemPaused();
         LibSettlement.DiamondStorage storage ds = LibSettlement.diamondStorage();
         if (ds.settlementReservations[settlementId] != 0) revert ReservationAlreadyExists(settlementId);
         uint256 bal = IERC20(ds.gsdcToken).balanceOf(partner);

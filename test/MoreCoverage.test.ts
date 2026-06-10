@@ -967,7 +967,7 @@ describe("[Task 10] Branch-coverage booster", () => {
       const chainNow = BigInt((await ethers.provider.getBlock("latest"))!.timestamp);
       const built = await buildAggDigest(d.diamondAddr, {
         quoteId: ethers.id("q-agg-dup"), corridorId: CORRIDOR_ID,
-        validAfter: 0n, validBefore: chainNow + 3600n,
+        validAfter: chainNow - 1n, validBefore: chainNow + 299n,
       });
       const sig0 = signDigest(donKeys[0], built.digest);
       await expect(qv.verifyAndDecodeAggregatedQuote(
@@ -981,7 +981,7 @@ describe("[Task 10] Branch-coverage booster", () => {
       const chainNow = BigInt((await ethers.provider.getBlock("latest"))!.timestamp);
       const built = await buildAggDigest(d.diamondAddr, {
         quoteId: ethers.id("q-agg-rogue"), corridorId: CORRIDOR_ID,
-        validAfter: 0n, validBefore: chainNow + 3600n,
+        validAfter: chainNow - 1n, validBefore: chainNow + 299n,
       });
       const rogue = ethers.Wallet.createRandom().privateKey;
       const sigs = [signDigest(donKeys[0], built.digest), signDigest(rogue, built.digest)];

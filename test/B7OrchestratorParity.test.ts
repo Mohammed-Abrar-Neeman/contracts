@@ -26,10 +26,12 @@ async function offChainSignQuote(args: {
   tgsTreasuryMarginBps: number;
   lpDestMarginBps: number;
   validBefore: bigint;
+  validAfter?: bigint;
   midRate?: string;
 }) {
   const midRate = args.midRate ?? "1.00000000";
-  const validAfter = 0n;
+  const blockTs = BigInt((await ethers.provider.getBlock("latest"))!.timestamp);
+  const validAfter = args.validAfter ?? (blockTs - 1n);
 
   const tuple = [
     args.quoteId, args.corridorId, args.deliveryAmount, args.totalDebit,
@@ -81,7 +83,7 @@ describe("[B-7] OracleClient.signQuote ↔ QuoteVerifierFacet round-trip", () =>
     // The dev fixture sets oracleSigner to hardhat signer #1.
     const ORACLE_PK = HARDHAT_PRIVATE_KEYS[1];
 
-    const validBefore = BigInt((await ethers.provider.getBlock("latest"))!.timestamp + 3600);
+    const validBefore = BigInt((await ethers.provider.getBlock("latest"))!.timestamp) + 299n;
     const { encodedQuote, oracleSignature } = await offChainSignQuote({
       diamondAddr: d.diamondAddr,
       oraclePrivateKey: ORACLE_PK,
@@ -104,7 +106,7 @@ describe("[B-7] OracleClient.signQuote ↔ QuoteVerifierFacet round-trip", () =>
   it("verifyAndDecodeQuote rejects a wrong-signer signature", async () => {
     const d = await deployFullDiamond();
     const qv = await asFacet<any>(d.diamondAddr, "QuoteVerifierFacet");
-    const validBefore = BigInt((await ethers.provider.getBlock("latest"))!.timestamp + 3600);
+    const validBefore = BigInt((await ethers.provider.getBlock("latest"))!.timestamp) + 299n;
     const { encodedQuote, oracleSignature } = await offChainSignQuote({
       diamondAddr: d.diamondAddr,
       oraclePrivateKey: HARDHAT_PRIVATE_KEYS[3], // not the configured oracle

@@ -51,7 +51,7 @@ library LibSettlement {
         mapping(address => uint256) floatReservations;     // partnerWallet => total reserved
         mapping(bytes32 => uint256) settlementReservations; // settlementId => amount
         address gsdcToken;
-        address tgsTreasuryWallet;
+        address tgsTreasuryWallet; // RESERVED — do not use in new code (superseded by tgsTreasuryMarginWallet)
         address tgsTreasuryMarginWallet;
         address admin;
         address pendingAdmin;
@@ -60,7 +60,9 @@ library LibSettlement {
         uint32  timeLockDelay;
         mapping(bytes32 => uint256) pendingChanges; // changeId => executeAfter
         mapping(bytes32 => bytes)   pendingChangePayloads;
-        mapping(address => mapping(bytes32 => bool)) usedNonces;
+        // @dev RESERVED — was mapping(address=>mapping(bytes32=>bool)) usedNonces.
+        // Slot [15] preserved for storage layout. Removed in audit fix Req-39.
+        bytes32 _reserved_slot_usedNonces;
         // [B-12 §3] DON+DAO multi-signer oracle whitelist + threshold.
         // Backwards-compat: `oracleSigner` (singular, above) STILL used by
         // verifyAndDecodeQuote() (B-7 single-signer path). The new
@@ -93,6 +95,7 @@ library LibSettlement {
         // `pendingTimeLockDelayReadyAt == 0` means "no delay change queued".
         uint32  pendingTimeLockDelay;
         uint256 pendingTimeLockDelayReadyAt;
+        bool    initialised; // Req-42: re-init guard. Set to true by DiamondInit.init.
     }
 
     function diamondStorage() internal pure returns (DiamondStorage storage ds) {

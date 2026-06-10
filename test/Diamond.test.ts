@@ -7,8 +7,8 @@ describe("Diamond — cut + loupe", () => {
     const d = await deployFullDiamond();
     const loupe = await asFacet<any>(d.diamondAddr, "DiamondLoupeFacet");
     const facets = await loupe.facets();
-    // 12 = 9 domain + DiamondCut + DiamondLoupe + [B-12] OracleGovernanceFacet.
-    expect(facets.length).to.equal(12);
+    // 13 = 9 domain + DiamondCut + DiamondLoupe + [B-12] OracleGovernanceFacet + PausableFacet.
+    expect(facets.length).to.equal(13);
   });
 
   it("facetAddress() resolves a known selector to its facet", async () => {

@@ -20,6 +20,8 @@ contract TimeLockControllerFacet {
     error UnknownKind(bytes32 kind);
     error DelayChangeNotReady(uint256 readyAt);
     error DelayChangeNotFound();
+    error ZeroAdmin();
+    error NotPendingAdmin();
 
     // ─── Events ──────────────────────────────────────────────────────
     event ChangeQueued(bytes32 indexed changeId, uint256 executeAfter);
@@ -201,5 +203,29 @@ contract TimeLockControllerFacet {
     /// @notice Inspect when a queued change becomes executable.
     function getPendingChange(bytes32 changeId) external view returns (uint256 readyAt) {
         return LibSettlement.diamondStorage().pendingChanges[changeId];
+    }
+
+    // ─── Two-step admin transfer ─────────────────────────────────────
+
+    event AdminTransferInitiated(address indexed currentAdmin, address indexed pendingAdmin);
+    event AdminTransferred(address indexed previousAdmin, address indexed newAdmin);
+
+    /// @notice Step 1 — current admin nominates a successor.
+    function transferAdmin(address newAdmin) external {
+        LibSettlement.enforceAdmin();
+        if (newAdmin == address(0)) revert ZeroAdmin();
+        LibSettlement.DiamondStorage storage ds = LibSettlement.diamondStorage();
+        ds.pendingAdmin = newAdmin;
+        emit AdminTransferInitiated(ds.admin, newAdmin);
+    }
+
+    /// @notice Step 2 — the nominee claims the admin role.
+    function acceptAdmin() external {
+        LibSettlement.DiamondStorage storage ds = LibSettlement.diamondStorage();
+        if (msg.sender != ds.pendingAdmin) revert NotPendingAdmin();
+        address previous = ds.admin;
+        ds.admin = msg.sender;
+        ds.pendingAdmin = address(0);
+        emit AdminTransferred(previous, msg.sender);
     }
 }

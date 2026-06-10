@@ -50,6 +50,7 @@ contract QuoteVerifierFacet {
     error QuoteNotYetValid(bytes32 quoteId, uint256 validAfter);
     error BelowThreshold(uint256 provided, uint256 required);
     error DuplicateSigner(address signer);
+    error QuoteTTLExceeded(bytes32 quoteId, uint256 ttl, uint256 maxTTL);
 
     /// @notice Legacy event retained for ABI compatibility (no emitter remains
     ///         in this facet — singular rotation now emits the unified
@@ -76,6 +77,14 @@ contract QuoteVerifierFacet {
         quote = abi.decode(encodedQuote, (OracleQuote));
         if (block.timestamp <= quote.validAfter) revert QuoteNotYetValid(quote.quoteId, quote.validAfter);
         if (block.timestamp >= quote.validBefore) revert QuoteExpired(quote.quoteId, quote.validBefore);
+
+        {
+            uint32 maxTTL = LibSettlement.diamondStorage().maxQuoteTTL;
+            if (maxTTL > 0) {
+                uint256 ttl = quote.validBefore - quote.validAfter;
+                if (ttl > maxTTL) revert QuoteTTLExceeded(quote.quoteId, ttl, maxTTL);
+            }
+        }
 
         LibSettlement.DiamondStorage storage ds = LibSettlement.diamondStorage();
         uint256 thr = ds.oracleThreshold;
@@ -113,6 +122,14 @@ contract QuoteVerifierFacet {
         quote = abi.decode(encodedQuote, (OracleQuote));
         if (block.timestamp <= quote.validAfter) revert QuoteNotYetValid(quote.quoteId, quote.validAfter);
         if (block.timestamp >= quote.validBefore) revert QuoteExpired(quote.quoteId, quote.validBefore);
+
+        {
+            uint32 maxTTL = LibSettlement.diamondStorage().maxQuoteTTL;
+            if (maxTTL > 0) {
+                uint256 ttl = quote.validBefore - quote.validAfter;
+                if (ttl > maxTTL) revert QuoteTTLExceeded(quote.quoteId, ttl, maxTTL);
+            }
+        }
 
         bytes32 structHash = keccak256(abi.encode(
             ORACLE_QUOTE_TYPEHASH,

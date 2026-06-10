@@ -246,7 +246,7 @@ describe("DiamondCut — Replace + Remove paths", () => {
     const d = await deployFullDiamond();
     const loupe = await asFacet<any>(d.diamondAddr, "DiamondLoupeFacet");
     const addrs = await loupe.facetAddresses();
-    // [B-12] +1 for OracleGovernanceFacet.
-    expect(addrs.length).to.equal(12);
+    // [B-12] +1 for OracleGovernanceFacet, +1 for PausableFacet (now wired).
+    expect(addrs.length).to.equal(13);
   });
 });
